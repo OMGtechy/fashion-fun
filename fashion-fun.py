@@ -67,7 +67,7 @@ while True:
     print("Evaluating")
     testLoss = model.evaluate(test_images, test_labels, verbose=0)
 
-    print(f"Mode training scored: {trainLoss}")
+    print(f"Model training scored: {trainLoss}")
     print(f"Model evaluation scored: {testLoss}")
 
     trainLossWorse = previousTrainLoss != None and previousTrainLoss < trainLoss
