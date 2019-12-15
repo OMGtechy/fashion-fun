@@ -7,6 +7,7 @@ parser = argparse.ArgumentParser("A toy fashion classifier")
 parser.add_argument("--epochs_per_iteration", type=int, required=False, default=5)
 parser.add_argument("--maximum_iterations", type=int, required=False, default=None)
 parser.add_argument("--hidden_layer_neurons", type=int, required=False, default=128)
+parser.add_argument("--hidden_layer_activation", type=str, required=False, default="relu", choices=["relu", "relu6", "elu", "softplus", "softsign"])
 parser.add_argument("--target_test_loss", type=float, required=False, default=float("NaN"))
 args = parser.parse_args()
 
@@ -14,11 +15,27 @@ print("Loading Fashion MNIST data")
 fashion_mnist = tf.keras.datasets.fashion_mnist
 (training_images, training_labels), (test_images, test_labels) = fashion_mnist.load_data()
 
+hidden_layer_activation = None
+if args.hidden_layer_activation == "relu":
+    hidden_layer_activation = tf.nn.relu
+elif args.hidden_layer_activation == "relu6":
+    hidden_layer_activation = tf.nn.relu6
+elif args.hidden_layer_activation == "elu":
+    hidden_layer_activation = tf.nn.elu
+elif args.hidden_layer_activation == "softplus":
+    hidden_layer_activation = tf.nn.softplus
+elif args.hidden_layer_activation == "softsign":
+    hidden_layer_activation = tf.nn.softsign
+
+if hidden_layer_activation == None:
+    print("Invalid hidden layer activation: {args.hidden_layer_activation}")
+    exit()
+
 print("Designing model")
 model = tf.keras.Sequential([
     # images are 28x28, input layer matches this
     tf.keras.layers.Flatten(input_shape=(28, 28)),
-    tf.keras.layers.Dense(args.hidden_layer_neurons, activation=tf.nn.relu),
+    tf.keras.layers.Dense(args.hidden_layer_neurons, activation=hidden_layer_activation),
     # 10 categories of item, hence 10 output neurons
     tf.keras.layers.Dense(10, activation=tf.nn.softmax)
 ])
